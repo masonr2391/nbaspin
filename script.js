@@ -19,38 +19,41 @@ const careerResultsEl = document.getElementById("careerResults");
 // Wheel setup
 const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
-let wheelNumbers = []; // numbers 40–99
+let wheelNumbers = Array.from({ length: 60 }, (_, i) => i + 40); // 40-99
 const wheelColors = ["#e74c3c", "#3498db", "#f1c40f", "#2ecc71", "#9b59b6"];
+const sliceCount = wheelNumbers.length;
+const sliceAngle = (2 * Math.PI) / sliceCount;
 
-let angle = 0;           // current rotation in radians
-let angularVelocity = 0; // current speed
+// Animation variables
 let spinning = false;
+let startAngle = 0;
+let targetAngle = 0;
+let animationStartTime = 0;
+const animationDuration = 3000; // spin duration in ms
 
-// Generate numbers 40–99
-function generateWheelNumbers() {
-  wheelNumbers = Array.from({ length: 60 }, (_, i) => i + 40);
+// Easing function
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
 }
 
-// Draw the wheel
-function drawWheel() {
+// Draw wheel
+function drawWheel(angle) {
   const radius = canvas.width / 2;
-  const step = (2 * Math.PI) / wheelNumbers.length;
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (let i = 0; i < wheelNumbers.length; i++) {
-    const startAngle = i * step + angle;
-    const endAngle = startAngle + step;
+  for (let i = 0; i < sliceCount; i++) {
+    const start = i * sliceAngle + angle;
+    const end = start + sliceAngle;
 
     ctx.beginPath();
     ctx.moveTo(radius, radius);
-    ctx.arc(radius, radius, radius, startAngle, endAngle);
+    ctx.arc(radius, radius, radius, start, end);
     ctx.fillStyle = wheelColors[i % wheelColors.length];
     ctx.fill();
 
     ctx.save();
     ctx.translate(radius, radius);
-    ctx.rotate(startAngle + step / 2);
+    ctx.rotate(start + sliceAngle / 2);
     ctx.fillStyle = "white";
     ctx.font = "bold 12px Arial";
     ctx.textAlign = "right";
@@ -58,7 +61,7 @@ function drawWheel() {
     ctx.restore();
   }
 
-  // Pointer at top
+  // Pointer
   ctx.fillStyle = "black";
   ctx.beginPath();
   ctx.moveTo(radius, 5);
@@ -68,26 +71,21 @@ function drawWheel() {
   ctx.fill();
 }
 
-// Spin animation with proper easing
-function spinWheelAnimation() {
-  if (!spinning) return;
+// Spin animation
+function animateSpin(timestamp) {
+  if (!animationStartTime) animationStartTime = timestamp;
+  const elapsed = timestamp - animationStartTime;
+  const t = Math.min(elapsed / animationDuration, 1);
+  const easedT = easeOutCubic(t);
+  const currentAngle = startAngle + (targetAngle - startAngle) * easedT;
 
-  angle += angularVelocity;
+  drawWheel(currentAngle);
 
-  // Ease out: reduce velocity gradually
-  angularVelocity *= 0.97;
-
-  drawWheel();
-
-  if (angularVelocity < 0.002) {
-    angularVelocity = 0;
-    spinning = false;
-
-    // Determine number under pointer
-    const selected = getWheelResult();
-    finalizeSpin(selected);
+  if (t < 1) {
+    requestAnimationFrame(animateSpin);
   } else {
-    requestAnimationFrame(spinWheelAnimation);
+    spinning = false;
+    finalizeSpin(getWheelResult(currentAngle));
   }
 }
 
@@ -95,15 +93,21 @@ function spinWheelAnimation() {
 function startSpin() {
   if (spinning) return;
   spinning = true;
-  angularVelocity = Math.random() * 0.3 + 0.5; // fast start
-  spinWheelAnimation();
+
+  const rotations = Math.floor(Math.random() * 3) + 5; // 5-7 full rotations
+  const targetIndex = Math.floor(Math.random() * sliceCount);
+
+  startAngle = 0;
+  targetAngle = rotations * 2 * Math.PI + targetIndex * sliceAngle;
+  animationStartTime = 0;
+
+  requestAnimationFrame(animateSpin);
 }
 
 // Get number under pointer
-function getWheelResult() {
-  const step = (2 * Math.PI) / wheelNumbers.length;
-  const normalizedAngle = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
-  const index = Math.floor(normalizedAngle / step) % wheelNumbers.length;
+function getWheelResult(angle) {
+  angle = angle % (2 * Math.PI);
+  const index = Math.floor((2 * Math.PI - angle) / sliceAngle) % sliceCount;
   return wheelNumbers[index];
 }
 
@@ -129,9 +133,7 @@ function nextAttribute() {
   if (currentCategoryIndex >= categories.length) return;
   const attrName = categories[currentCategoryIndex];
   attributeTitle.textContent = `Spin for ${attrName}`;
-  generateWheelNumbers();
-  angle = 0;
-  drawWheel();
+  drawWheel(0);
 }
 
 // Finalize spin
@@ -182,5 +184,4 @@ restartBtn.addEventListener("click", () => {
 });
 
 // Initial draw
-generateWheelNumbers();
-drawWheel();
+drawWheel(0);
