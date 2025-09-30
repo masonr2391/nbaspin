@@ -33,25 +33,4 @@ button {
   margin-top: 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  background: #2980b9;
-}
-
-.hidden {
-  display: none;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-ul li {
-  background: #ecf0f1;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 6px;
-}
+  transition: 
