@@ -19,12 +19,12 @@ const careerResultsEl = document.getElementById("careerResults");
 // Wheel setup
 const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
-let wheelNumbers = Array.from({ length: 60 }, (_, i) => i + 40); // 40-99
+const wheelNumbers = Array.from({ length: 60 }, (_, i) => i + 40); // 40-99
 const wheelColors = ["#e74c3c", "#3498db", "#f1c40f", "#2ecc71", "#9b59b6"];
 const sliceCount = wheelNumbers.length;
 const sliceAngle = (2 * Math.PI) / sliceCount;
 
-// Animation variables
+// Spin animation variables
 let spinning = false;
 let startAngle = 0;
 let targetAngle = 0;
@@ -128,7 +128,7 @@ function evaluatePlayer(attrs) {
   return results;
 }
 
-// Move to next attribute
+// Next attribute
 function nextAttribute() {
   if (currentCategoryIndex >= categories.length) return;
   const attrName = categories[currentCategoryIndex];
