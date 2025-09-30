@@ -37,23 +37,25 @@ function drawWheel() {
     const startAngle = i * step + angle;
     const endAngle = startAngle + step;
 
+    // Colored slice
     ctx.beginPath();
     ctx.moveTo(radius, radius);
     ctx.arc(radius, radius, radius, startAngle, endAngle);
     ctx.fillStyle = wheelColors[i % wheelColors.length];
     ctx.fill();
 
+    // Number
     ctx.save();
     ctx.translate(radius, radius);
     ctx.rotate(startAngle + step / 2);
     ctx.fillStyle = "white";
-    ctx.font = "12px Arial";
+    ctx.font = "bold 12px Arial";
     ctx.textAlign = "right";
     ctx.fillText(wheelNumbers[i], radius - 5, 5);
     ctx.restore();
   }
 
-  // Arrow indicator
+  // Pointer arrow
   ctx.fillStyle = "black";
   ctx.beginPath();
   ctx.moveTo(radius, 0);
@@ -63,11 +65,12 @@ function drawWheel() {
   ctx.fill();
 }
 
+// Spin animation
 function spinWheelAnimation() {
   if (!spinning) return;
 
   angle += spinVelocity;
-  spinVelocity *= 0.98; // friction
+  spinVelocity *= 0.985; // friction
 
   if (spinVelocity < 0.002) {
     spinning = false;
@@ -81,7 +84,7 @@ function spinWheelAnimation() {
 
 function startSpin() {
   if (spinning) return;
-  spinVelocity = Math.random() * 0.3 + 0.25;
+  spinVelocity = Math.random() * 0.25 + 0.25; // random speed
   spinning = true;
   spinWheelAnimation();
 }
@@ -93,7 +96,7 @@ function getWheelResult() {
   return wheelNumbers[index];
 }
 
-// Career logic (more realistic)
+// Career logic (realistic)
 function overallScore(attrs) {
   let values = Object.values(attrs);
   return values.reduce((a, b) => a + b, 0) / values.length;
@@ -103,15 +106,13 @@ function evaluatePlayer(attrs) {
   const ovr = overallScore(attrs);
   let results = {};
 
-  // Stats scale with overall
-  results["Points Per Game"] = (ovr * 0.25 + Math.random() * 5).toFixed(1); // ~10–30
-  results["Rebounds Per Game"] = (ovr * 0.07 + Math.random() * 2).toFixed(1); // ~3–12
-  results["Assists Per Game"] = (ovr * 0.06 + Math.random() * 2).toFixed(1); // ~2–10
+  results["Points Per Game"] = (8 + ovr * 0.25 + Math.random() * 3).toFixed(1); // ~10–35
+  results["Rebounds Per Game"] = (2 + ovr * 0.08 + Math.random() * 2).toFixed(1); // ~3–15
+  results["Assists Per Game"] = (1 + ovr * 0.07 + Math.random() * 2).toFixed(1); // ~2–12
 
-  // Awards
-  results["Championships"] = Math.floor(ovr / 25) + (ovr > 85 && Math.random() > 0.7 ? 1 : 0);
-  results["MVP Awards"] = ovr > 90 ? Math.floor(Math.random() * 2) : 0;
-  results["All-Star Selections"] = Math.floor(ovr / 8) + (Math.random() > 0.8 ? 1 : 0);
+  results["Championships"] = ovr > 80 ? Math.floor((ovr - 70) / 15) + (Math.random() > 0.7 ? 1 : 0) : 0;
+  results["MVP Awards"] = ovr > 92 ? Math.floor(Math.random() * 3) : 0;
+  results["All-Star Selections"] = Math.floor(ovr / 10) + (Math.random() > 0.7 ? 1 : 0);
 
   return results;
 }
@@ -133,7 +134,7 @@ startBtn.addEventListener("click", () => {
   resultEl.textContent = "";
   currentCategoryEl.textContent = `Spin for ${categories[currentCategoryIndex]}`;
 
-  drawWheel();
+  drawWheel(); // draw immediately
 });
 
 spinBtn.addEventListener("click", () => {
