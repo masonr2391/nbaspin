@@ -51,16 +51,16 @@ function drawWheel() {
     ctx.fillStyle = "white";
     ctx.font = "bold 12px Arial";
     ctx.textAlign = "right";
-    ctx.fillText(wheelNumbers[i], radius - 5, 5);
+    ctx.fillText(wheelNumbers[i], radius - 10, 5);
     ctx.restore();
   }
 
-  // Pointer arrow
+  // Pointer arrow (top center)
   ctx.fillStyle = "black";
   ctx.beginPath();
-  ctx.moveTo(radius, 0);
-  ctx.lineTo(radius - 10, 20);
-  ctx.lineTo(radius + 10, 20);
+  ctx.moveTo(radius, 5);
+  ctx.lineTo(radius - 15, 35);
+  ctx.lineTo(radius + 15, 35);
   ctx.closePath();
   ctx.fill();
 }
@@ -106,6 +106,7 @@ function evaluatePlayer(attrs) {
   const ovr = overallScore(attrs);
   let results = {};
 
+  // More realistic ranges
   results["Points Per Game"] = (8 + ovr * 0.25 + Math.random() * 3).toFixed(1); // ~10–35
   results["Rebounds Per Game"] = (2 + ovr * 0.08 + Math.random() * 2).toFixed(1); // ~3–15
   results["Assists Per Game"] = (1 + ovr * 0.07 + Math.random() * 2).toFixed(1); // ~2–12
@@ -172,4 +173,9 @@ restartBtn.addEventListener("click", () => {
   resultsDiv.classList.add("hidden");
   gameDiv.classList.remove("hidden");
   document.getElementById("playerName").value = "";
+  angle = 0; // reset wheel
+  drawWheel();
 });
+
+// Draw wheel immediately on page load
+drawWheel();
