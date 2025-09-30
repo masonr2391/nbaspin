@@ -135,3 +135,57 @@ startBtn.addEventListener("click", () => {
 
   attributes = {};
   currentCategoryIndex = 0;
+  attributesList.innerHTML = "";
+  resultEl.textContent = "";
+
+  nextAttribute();
+});
+
+spinBtn.addEventListener("click", () => {
+  startSpin();
+});
+
+function nextAttribute() {
+  if (currentCategoryIndex >= categories.length) return;
+
+  const attrName = categories[currentCategoryIndex];
+  attributeTitle.textContent = `Spin for ${attrName}`;
+  generateWheelNumbers();
+  angle = 0;
+  drawWheel();
+}
+
+function finalizeSpin(score) {
+  const attrName = categories[currentCategoryIndex];
+  attributes[attrName] = score;
+
+  resultEl.textContent = `${attrName}: ${score}`;
+  attributesList.innerHTML += `<li>${attrName}: ${score}</li>`;
+
+  currentCategoryIndex++;
+
+  if (currentCategoryIndex < categories.length) {
+    nextAttribute();
+  } else {
+    spinsDiv.classList.add("hidden");
+    resultsDiv.classList.remove("hidden");
+
+    const ovr = overallScore(attributes).toFixed(1);
+    summaryEl.textContent = `${playerName} (OVR ${ovr}) with attributes: ${JSON.stringify(attributes)}`;
+
+    let career = evaluatePlayer(attributes);
+    careerResultsEl.innerHTML = "";
+    for (let [key, value] of Object.entries(career)) {
+      careerResultsEl.innerHTML += `<li>${key}: ${value}</li>`;
+    }
+  }
+}
+
+restartBtn.addEventListener("click", () => {
+  resultsDiv.classList.add("hidden");
+  gameDiv.classList.remove("hidden");
+  document.getElementById("playerName").value = "";
+  currentCategoryIndex = 0;
+  attributes = {};
+  nextAttribute();
+});
