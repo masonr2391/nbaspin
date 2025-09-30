@@ -23,7 +23,7 @@ let wheelNumbers = []; // numbers 40–99
 const wheelColors = ["#e74c3c", "#3498db", "#f1c40f", "#2ecc71", "#9b59b6"];
 
 let angle = 0;           // current rotation in radians
-let angularVelocity = 0; // radians per frame
+let angularVelocity = 0; // current speed
 let spinning = false;
 
 // Generate numbers 40–99
@@ -42,14 +42,12 @@ function drawWheel() {
     const startAngle = i * step + angle;
     const endAngle = startAngle + step;
 
-    // Colored slice
     ctx.beginPath();
     ctx.moveTo(radius, radius);
     ctx.arc(radius, radius, radius, startAngle, endAngle);
     ctx.fillStyle = wheelColors[i % wheelColors.length];
     ctx.fill();
 
-    // Number
     ctx.save();
     ctx.translate(radius, radius);
     ctx.rotate(startAngle + step / 2);
@@ -60,7 +58,7 @@ function drawWheel() {
     ctx.restore();
   }
 
-  // Pointer arrow at top
+  // Pointer at top
   ctx.fillStyle = "black";
   ctx.beginPath();
   ctx.moveTo(radius, 5);
@@ -70,31 +68,34 @@ function drawWheel() {
   ctx.fill();
 }
 
-// Spin animation with easing
+// Spin animation with proper easing
 function spinWheelAnimation() {
   if (!spinning) return;
 
   angle += angularVelocity;
 
-  // Ease-out: reduce angular velocity smoothly
-  angularVelocity *= 0.97; // friction
+  // Ease out: reduce velocity gradually
+  angularVelocity *= 0.97;
+
+  drawWheel();
+
   if (angularVelocity < 0.002) {
     angularVelocity = 0;
     spinning = false;
+
+    // Determine number under pointer
     const selected = getWheelResult();
     finalizeSpin(selected);
-    return;
+  } else {
+    requestAnimationFrame(spinWheelAnimation);
   }
-
-  drawWheel();
-  requestAnimationFrame(spinWheelAnimation);
 }
 
-// Start spinning with random speed
+// Start spin
 function startSpin() {
   if (spinning) return;
   spinning = true;
-  angularVelocity = Math.random() * 0.3 + 0.4; // fast start
+  angularVelocity = Math.random() * 0.3 + 0.5; // fast start
   spinWheelAnimation();
 }
 
@@ -102,7 +103,7 @@ function startSpin() {
 function getWheelResult() {
   const step = (2 * Math.PI) / wheelNumbers.length;
   const normalizedAngle = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
-  const index = Math.floor(normalizedAngle / step);
+  const index = Math.floor(normalizedAngle / step) % wheelNumbers.length;
   return wheelNumbers[index];
 }
 
