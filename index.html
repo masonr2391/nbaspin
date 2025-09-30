@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spin-a-Player 🎮🏀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Spin-a-Player 🎮🏀</h1>
+    <p>Create a player by spinning the wheel for attributes!</p>
+
+    <div id="game">
+      <label for="playerName">Enter your player’s name:</label>
+      <input type="text" id="playerName" placeholder="e.g. Jordan 2.0">
+      <button id="startBtn">Start Game</button>
+    </div>
+
+    <div id="spins" class="hidden">
+      <h2>Spin for Attributes</h2>
+      <p id="currentCategory"></p>
+      <button id="spinBtn">Spin 🎡</button>
+      <p id="result"></p>
+      <ul id="attributesList"></ul>
+    </div>
+
+    <div id="results" class="hidden">
+      <h2>🏀 Player Summary 🏀</h2>
+      <p id="summary"></p>
+      <h2>📊 Career Simulation 📊</h2>
+      <ul id="careerResults"></ul>
+      <button id="restartBtn">Play Again</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
