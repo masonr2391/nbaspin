@@ -33,4 +33,42 @@ button {
   margin-top: 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: 
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #2980b9;
+}
+
+.hidden {
+  display: none;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  background: #ecf0f1;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Canvas styling */
+#wheelCanvas {
+  display: block;
+  margin: 20px auto;
+  border: 4px solid #333;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* Attribute title */
+#attributeTitle {
+  font-size: 1.3em;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  font-weight: bold;
+}
