@@ -18,5 +18,5 @@ A fun browser-based game where you **spin a wheel to decide your player's attrib
    - All-Star selections
 
 ## 🚀 Play Online
-If hosted with GitHub Pages, you can play directly in your browser at:
+If hosted with GitHub Pages, you can play directly in your browser at: https://masonr2391.github.io/nbaspin/
 
