@@ -19,12 +19,12 @@ const careerResultsEl = document.getElementById("careerResults");
 // Wheel setup
 const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
-let wheelNumbers = []; // numbers from 40–99
+let wheelNumbers = []; // numbers 40–99
 const wheelColors = ["#e74c3c", "#3498db", "#f1c40f", "#2ecc71", "#9b59b6"];
 
-let angle = 0;
+let angle = 0;           // current rotation in radians
+let angularVelocity = 0; // radians per frame
 let spinning = false;
-let spinVelocity = 0;
 
 // Generate numbers 40–99
 function generateWheelNumbers() {
@@ -60,7 +60,7 @@ function drawWheel() {
     ctx.restore();
   }
 
-  // Pointer arrow (top center)
+  // Pointer arrow at top
   ctx.fillStyle = "black";
   ctx.beginPath();
   ctx.moveTo(radius, 5);
@@ -70,45 +70,43 @@ function drawWheel() {
   ctx.fill();
 }
 
-// Spin animation
+// Spin animation with easing
 function spinWheelAnimation() {
   if (!spinning) return;
 
-  angle += spinVelocity;
-  spinVelocity *= 0.98; // friction
+  angle += angularVelocity;
 
-  drawWheel();
-
-  // Stop spinning if velocity is very low
-  if (spinVelocity < 0.002) {
+  // Ease-out: reduce angular velocity smoothly
+  angularVelocity *= 0.97; // friction
+  if (angularVelocity < 0.002) {
+    angularVelocity = 0;
     spinning = false;
-    // Determine value based on pointer position
     const selected = getWheelResult();
     finalizeSpin(selected);
-  } else {
-    requestAnimationFrame(spinWheelAnimation);
+    return;
   }
+
+  drawWheel();
+  requestAnimationFrame(spinWheelAnimation);
 }
 
+// Start spinning with random speed
 function startSpin() {
   if (spinning) return;
-  // Randomize starting speed
-  spinVelocity = Math.random() * 0.3 + 0.3;
   spinning = true;
+  angularVelocity = Math.random() * 0.3 + 0.4; // fast start
   spinWheelAnimation();
 }
 
-// Determine the number at the pointer
+// Get number under pointer
 function getWheelResult() {
   const step = (2 * Math.PI) / wheelNumbers.length;
-  const radius = canvas.width / 2;
-  // pointer is at top (0 radians)
   const normalizedAngle = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
   const index = Math.floor(normalizedAngle / step);
   return wheelNumbers[index];
 }
 
-// Career logic (realistic)
+// Career logic
 function overallScore(attrs) {
   return Object.values(attrs).reduce((a, b) => a + b, 0) / Object.values(attrs).length;
 }
@@ -182,6 +180,6 @@ restartBtn.addEventListener("click", () => {
   nextAttribute();
 });
 
-// Draw wheel on initial load
+// Initial draw
 generateWheelNumbers();
 drawWheel();
